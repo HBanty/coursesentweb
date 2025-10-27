@@ -109,6 +109,46 @@ npm run dev
 
 The app will be available at `http://localhost:5173`
 
+## 🔑 Getting API Keys & Credentials
+
+### MongoDB (MONGO_URI)
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+2. Sign up or log in
+3. Create a new cluster (free tier available)
+4. Click **Connect** → **Connect your application**
+5. Copy the connection string (it looks like: `mongodb+srv://username:<password>@cluster.xxxxx.mongodb.net/`)
+6. Replace `<password>` with your database user password
+7. Add your database name at the end: `mongodb+srv://username:password@cluster.xxxxx.mongodb.net/course-selling-app`
+
+### Stripe Keys (STRIPE_SECRET_KEY & VITE_STRIPE_PUBLIC_KEY)
+1. Go to [Stripe Dashboard](https://dashboard.stripe.com/)
+2. Sign up or log in
+3. Click **Developers** → **API keys** in the sidebar
+4. You'll see two keys:
+   - **Publishable key** (starts with `pk_test_`) → Use for `VITE_STRIPE_PUBLIC_KEY`
+   - **Secret key** (starts with `sk_test_`) → Use for `STRIPE_SECRET_KEY`
+5. ⚠️ **Important:** Use **Test mode** keys for development (toggle at top of page)
+
+### Cloudinary (cloud_name, api_key, api_secret)
+1. Go to [Cloudinary](https://cloudinary.com/)
+2. Sign up or log in
+3. Go to your [Dashboard](https://cloudinary.com/console)
+4. You'll see your credentials at the top:
+   - **Cloud name** → Use for `cloud_name`
+   - **API Key** → Use for `api_key`
+   - **API Secret** → Click **"Reveal"** to see it → Use for `api_secret`
+
+### JWT Secrets (JWT_USER_PASSWORD & JWT_ADMIN_PASSWORD)
+- These are custom secret strings you create
+- Use a strong, random string (at least 32 characters)
+- You can generate them using:
+  ```bash
+  # On Linux/Mac/Windows (PowerShell)
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
+- Or use any random string generator
+- Keep them different for user and admin tokens
+
 ## 🔐 Environment Variables
 
 ### Backend (.env)
@@ -175,7 +215,7 @@ npm run lint     # Run ESLint
 
 This project is licensed under the ISC License.
 
-## 👤 Author
+## 👤 Bijnadatta Moharana
 
 Akhil K
 
