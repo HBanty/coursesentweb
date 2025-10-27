@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -13,13 +13,14 @@ import Dashboard from "./admin/Dashboard";
 import CourseCreate from "./admin/CourseCreate";
 import UpdateCourse from "./admin/UpdateCourse";
 import OurCourses from "./admin/OurCourses";
+import ErrorBoundary from "./components/ErrorBoundary";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  const user = JSON.parse(localStorage.getItem("user"));
-  const admin = JSON.parse(localStorage.getItem("admin"));
   return (
-    <div>
-      <Routes>
+    <ErrorBoundary>
+      <div>
+        <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -27,27 +28,77 @@ function App() {
         {/* Other Routes */}
         <Route path="/courses" element={<Courses />} />
         <Route path="/buy/:courseId" element={<Buy />} />
-        <Route path="/purchases" element={<Purchases/>}
-        />
-{/*         you can use below one if required 
- <Route
+        <Route
           path="/purchases"
-          element={user ? <Purchases /> : <Navigate to={"/login"} />}
-        />*/}
+          element={
+            <ProtectedRoute requiredRole="user">
+              <Purchases />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Admin Routes */}
         <Route path="/admin/signup" element={<AdminSignup />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route
           path="/admin/dashboard"
-          element={admin ? <Dashboard /> : <Navigate to={"/admin/login"} />}
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <Dashboard />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/admin/create-course" element={<CourseCreate />} />
-        <Route path="/admin/update-course/:id" element={<UpdateCourse />} />
-        <Route path="/admin/our-courses" element={<OurCourses />} />
-      </Routes>
-      <Toaster />
-    </div>
+        <Route
+          path="/admin/create-course"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <CourseCreate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/update-course/:id"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <UpdateCourse />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/our-courses"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <OurCourses />
+            </ProtectedRoute>
+          }
+        />
+        </Routes>
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 4000,
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+      </div>
+    </ErrorBoundary>
   );
 }
 
