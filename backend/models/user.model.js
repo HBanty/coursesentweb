@@ -12,12 +12,20 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    union: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
   },
   password: {
     type: String,
     required: true,
+    select: false, // Don't return password by default in queries
   },
+}, {
+  timestamps: true, // Add createdAt and updatedAt
 });
+
+// Create index on email for faster queries
+userSchema.index({ email: 1 });
 
 export const User = mongoose.model("User", userSchema);
