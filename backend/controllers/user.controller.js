@@ -29,7 +29,6 @@ export const signup = async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  console.log("Hashed Password:", hashedPassword);
   try {
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
@@ -55,7 +54,6 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email: email });
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    console.log("Password Match:", isPasswordCorrect);
 
    if (!user || !isPasswordCorrect) {
       return res.status(403).json({ errors: "Invalid credentials" });
