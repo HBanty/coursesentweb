@@ -41,7 +41,13 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
     await newUser.save();
-    res.status(201).json({ message: "Signup succeedded", newUser });
+    const userResponse = {
+      _id: newUser._id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      email: newUser.email
+    };
+    res.status(201).json({ message: "Signup succeeded", user: userResponse });
   } catch (error) {
     res.status(500).json({ errors: "Error in signup" });
     console.log("Error in signup", error);
@@ -53,9 +59,13 @@ export const login = async (req, res) => {
   try {
     const user = await User.findOne({ email: email });
 
+    if (!user) {
+      return res.status(403).json({ errors: "Invalid credentials" });
+    }
+
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-   if (!user || !isPasswordCorrect) {
+    if (!isPasswordCorrect) {
       return res.status(403).json({ errors: "Invalid credentials" });
     }
     // jwt code
@@ -73,7 +83,13 @@ export const login = async (req, res) => {
       sameSite: "Strict", // CSRF attacks
     };
     res.cookie("jwt", token, cookieOptions);
-    res.status(201).json({ message: "Login successful", user, token });
+    const userResponse = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email
+    };
+    res.status(200).json({ message: "Login successful", user: userResponse, token });
   } catch (error) {
     res.status(500).json({ errors: "Error in login" });
     console.log("error in login", error);
@@ -96,11 +112,8 @@ export const purchases = async (req, res) => {
   try {
     const purchased = await Purchase.find({ userId });
 
-    let purchasedCourseId = [];
-
-    for (let i = 0; i < purchased.length; i++) {
-      purchasedCourseId.push(purchased[i].courseId);
-    }
+    const purchasedCourseId = purchased.map(purchase => purchase.courseId);
+    
     const courseData = await Course.find({
       _id: { $in: purchasedCourseId },
     });

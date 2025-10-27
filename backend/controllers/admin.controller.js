@@ -41,7 +41,13 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
     await newAdmin.save();
-    res.status(201).json({ message: "Signup succeedded", newAdmin });
+    const adminResponse = {
+      _id: newAdmin._id,
+      firstName: newAdmin.firstName,
+      lastName: newAdmin.lastName,
+      email: newAdmin.email
+    };
+    res.status(201).json({ message: "Signup succeeded", admin: adminResponse });
   } catch (error) {
     res.status(500).json({ errors: "Error in signup" });
     console.log("Error in signup", error);
@@ -52,9 +58,14 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const admin = await Admin.findOne({ email: email });
+
+    if (!admin) {
+      return res.status(403).json({ errors: "Invalid credentials" });
+    }
+
     const isPasswordCorrect = await bcrypt.compare(password, admin.password);
 
-    if (!admin || !isPasswordCorrect) {
+    if (!isPasswordCorrect) {
       return res.status(403).json({ errors: "Invalid credentials" });
     }
 
@@ -73,7 +84,13 @@ export const login = async (req, res) => {
       sameSite: "Strict", // CSRF attacks
     };
     res.cookie("jwt", token, cookieOptions);
-    res.status(201).json({ message: "Login successful", admin, token });
+    const adminResponse = {
+      _id: admin._id,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      email: admin.email
+    };
+    res.status(200).json({ message: "Login successful", admin: adminResponse, token });
   } catch (error) {
     res.status(500).json({ errors: "Error in login" });
     console.log("error in login", error);
